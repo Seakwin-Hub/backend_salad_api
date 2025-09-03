@@ -4,12 +4,11 @@ from flask_restful import Api
 import logging
 from flask_sqlalchemy import SQLAlchemy
 
-url = quote('salad-disease-db-dewinner82-f18c.j.aivencloud.com')
-port = quote('28995')
-username = quote('avnadmin')
-password =  quote('AVNS_T5A1bL7cSXKolLbMZq8')
-mysqldb = quote('defaultdb')
-
+url = quote('localhost')
+port = quote('3306')
+username = quote('root')
+password =  quote('Seakwin$$$6050')
+mysqldb = quote('dbsaladdiseases')
 # config file
 app = Flask(__name__)
 
