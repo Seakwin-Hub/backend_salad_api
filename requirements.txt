@@ -107,3 +107,4 @@ whitenoise==5.3.0
 wrapt==1.15.0
 WTForms==2.3.3
 zopfli==0.2.2
+cloudinary

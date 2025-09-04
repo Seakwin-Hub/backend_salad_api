@@ -119,6 +119,96 @@ def tflite_detect_images(modelpath, imgpath, lblpath, min_conf=0.5, num_test_ima
                 
     return detections
 
+
+import os
+import cv2
+import cloudinary
+import cloudinary.uploader
+from flask import request, jsonify
+from flask_restful import Resource
+
+# Configure Cloudinary
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET')
+)
+
+class ImageUpload(Resource):
+    @classmethod
+    def post(cls):
+        try:
+            if 'file' not in request.files:
+                return jsonify({'objresponse':[{'message':'File not received','image_url':'','diseaseid':0}]}), 400
+            file = request.files['file']
+            if file.filename == '':
+                return jsonify({'objresponse':[{'message':'No selected file','image_url':'','diseaseid':0}]}), 400
+
+            # Save temporarily to process with OpenCV/PIL
+            temp_path = f"./temp_{file.filename}"
+            file.save(temp_path)    
+            # OpenCV image for detection
+            image = cv2.imread(temp_path)
+            
+            # ----------------------
+            # Your TFLite detection code
+            # ----------------------
+            
+            PATH_TO_IMAGES = temp_path
+            PATH_TO_MODEL = 'model.tflite'
+            PATH_TO_LABELS = 'label_map.pbtxt'
+            min_conf_threshold = 0.5
+            images_to_test = 1
+            txt_only = False    
+            
+            detections = tflite_detect_images(PATH_TO_MODEL, PATH_TO_IMAGES, PATH_TO_LABELS, min_conf_threshold, images_to_test, txt_only)
+
+            if not detections:
+                os.remove(temp_path)
+                return jsonify({'objresponse':[{'message':'imageNotFound','image_url':'','diseaseid':0}]}), 200
+
+
+            for detection in detections:
+                class_info, confidence, xmin, ymin, xmax, ymax = detection[0], detection[1], detection[2], detection[3], detection[4], detection[5]
+                    
+                # Draw bounding box
+                cv2.rectangle(image, (xmin, ymin), (xmax, ymax), (10, 255, 0), 2)
+                    
+                # Draw label
+                label = f"{class_info['name']} {int(confidence*100)}%"
+                cv2.putText(image, label, (xmin, ymin-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 2)
+
+                getid = detection[0]['id']
+
+            # Save annotated image temporarily
+            annotated_path = f"./annotated_{file.filename}"
+            cv2.imwrite(annotated_path, image)
+
+            # Upload to Cloudinary WITH REPLACEMENT
+            upload_result = cloudinary.uploader.upload(
+                annotated_path,
+                public_id="uploadfile/current_salad_detection",  # Same ID for replacement
+                folder="uploadfile",
+                overwrite=True,    # This enables replacement
+                invalidate=True    # Clear CDN cache
+            )
+            cloud_url = upload_result.get('secure_url')
+
+            # Cleanup local files
+            os.remove(temp_path)
+            os.remove(annotated_path)
+
+            return jsonify({'objresponse':[{'message':'Image received and processed','image_url':cloud_url,'diseaseid':getid}]})
+        
+        except Exception as e:
+            # Clean up temp files if they exist in case of error
+            if 'temp_path' in locals() and os.path.exists(temp_path):
+                os.remove(temp_path)
+            if 'annotated_path' in locals() and os.path.exists(annotated_path):
+                os.remove(annotated_path)
+                
+            return jsonify({'objresponse':[{'message':'Error processing image: '+str(e)}]}), 400
+
 # addFileDir = r"F:\File\Mobile\salad_detect_project\backend_salad_api"
 
 # class ImageUpload(Resource):
