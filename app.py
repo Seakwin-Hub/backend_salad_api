@@ -12,14 +12,14 @@ def page_not_found(err):
     return {"msg": "page not found"}
 
 api.add_resource(HomePage, "/")
-api.add_resource(Disease, "/disease/<did>a")
+api.add_resource(Disease, "/disease/<did>")
 api.add_resource(DiseaseList, "/diseaselist")
 api.add_resource(SaladType, "/saladtype/<sid>")
 api.add_resource(SaladList, "/saladlist")
 api.add_resource(DiseaseImg, "/imagedata/<typeimg>")
 api.add_resource(SaladKindImg, "/imagedata/salad/<typeimg>")
 api.add_resource(DiseaseKindImg, "/imagedata/disease/<typeimg>")
-api.add_resource(ImageUpload,"/imageupload" )
+# api.add_resource(ImageUpload,"/imageupload" )
 
 if __name__ == "__main__":
     db.init_app(app)

@@ -119,74 +119,74 @@ def tflite_detect_images(modelpath, imgpath, lblpath, min_conf=0.5, num_test_ima
                 
     return detections
 
-addFileDir = r"F:\File\Mobile\salad_detect_project\backend_salad_api"
+# addFileDir = r"F:\File\Mobile\salad_detect_project\backend_salad_api"
 
-class ImageUpload(Resource):
-    @classmethod
-    def post(cls):
-        ENCODING = 'utf-8'
-        data = request.get_json()
-        base64_image = data.get('image', '')
-        if base64_image:
-            try:
-                image_bytes = base64.b64decode(base64_image)
-                image = Image.open(BytesIO(image_bytes))
+# class ImageUpload(Resource):
+#     @classmethod
+#     def post(cls):
+#         ENCODING = 'utf-8'
+#         data = request.get_json()
+#         base64_image = data.get('image', '')
+#         if base64_image:
+#             try:
+#                 image_bytes = base64.b64decode(base64_image)
+#                 image = Image.open(BytesIO(image_bytes))
 
-                image_filename = os.path.join(addFileDir, 'uploaded_image.jpg')
-                image = image.convert('RGB')
-                image.save(image_filename)
-                image = cv2.imread(image_filename)
-                print(image_filename)
+#                 image_filename = os.path.join(addFileDir, 'uploaded_image.jpg')
+#                 image = image.convert('RGB')
+#                 image.save(image_filename)
+#                 image = cv2.imread(image_filename)
+#                 print(image_filename)
 
 
-                PATH_TO_IMAGES= image_filename   #'workspace\images\test'   # Path to test images folder
-                PATH_TO_MODEL='model.tflite'   # Path to .tflite model file
-                PATH_TO_LABELS='label_map.pbtxt' # Path to labelmap.txt file
-                min_conf_threshold=0.5   # Confidence threshold (try changing this to 0.01 if you don't see any detection results)
-                images_to_test = 10   # Number of images to run detection on
-                txt_only = False
-                detections = tflite_detect_images(PATH_TO_MODEL, PATH_TO_IMAGES, PATH_TO_LABELS, min_conf_threshold, images_to_test,txt_only)
-                image = cv2.imread(PATH_TO_IMAGES)
-                if not detections:
-                    print('Empty')
-                    os.remove(image_filename)
-                    return jsonify({'objresponse' : [{'message': 'imageNotFound', 'image_path': '', 'diseaseid' : 0}]})
-                else :
-                    for detection in detections:
-                        class_info, confidence, xmin, ymin, xmax, ymax = detection[0], detection[1], detection[2], detection[3], detection[4], detection[5]
+#                 PATH_TO_IMAGES= image_filename   #'workspace\images\test'   # Path to test images folder
+#                 PATH_TO_MODEL='model.tflite'   # Path to .tflite model file
+#                 PATH_TO_LABELS='label_map.pbtxt' # Path to labelmap.txt file
+#                 min_conf_threshold=0.5   # Confidence threshold (try changing this to 0.01 if you don't see any detection results)
+#                 images_to_test = 10   # Number of images to run detection on
+#                 txt_only = False
+#                 detections = tflite_detect_images(PATH_TO_MODEL, PATH_TO_IMAGES, PATH_TO_LABELS, min_conf_threshold, images_to_test,txt_only)
+#                 image = cv2.imread(PATH_TO_IMAGES)
+#                 if not detections:
+#                     print('Empty')
+#                     os.remove(image_filename)
+#                     return jsonify({'objresponse' : [{'message': 'imageNotFound', 'image_path': '', 'diseaseid' : 0}]})
+#                 else :
+#                     for detection in detections:
+#                         class_info, confidence, xmin, ymin, xmax, ymax = detection[0], detection[1], detection[2], detection[3], detection[4], detection[5]
                         
-                        # Draw bounding box
-                        cv2.rectangle(image, (xmin, ymin), (xmax, ymax), (10, 255, 0), 2)
+#                         # Draw bounding box
+#                         cv2.rectangle(image, (xmin, ymin), (xmax, ymax), (10, 255, 0), 2)
                         
-                        # Draw label
-                        label = f"{class_info['name']} {int(confidence * 100)}%"
-                        cv2.putText(image, label, (xmin, ymin - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+#                         # Draw label
+#                         label = f"{class_info['name']} {int(confidence * 100)}%"
+#                         cv2.putText(image, label, (xmin, ymin - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
-                        # Save the annotated image to a directory
-                        annotated_image_filename = "uploaded_image.jpg"  # Adjust the filename and extension as needed
-                        path_to_save = "./uploadimage/" + annotated_image_filename
+#                         # Save the annotated image to a directory
+#                         annotated_image_filename = "uploaded_image.jpg"  # Adjust the filename and extension as needed
+#                         path_to_save = "./uploadimage/" + annotated_image_filename
 
-                        cv2.imwrite(path_to_save, image)
+#                         cv2.imwrite(path_to_save, image)
 
-                        getid = detection[0]['id']
-                        print(detection)
+#                         getid = detection[0]['id']
+#                         print(detection)
 
-                    with open(path_to_save, 'rb') as open_file:
+#                     with open(path_to_save, 'rb') as open_file:
                             
-                        byte_content = open_file.read()
+#                         byte_content = open_file.read()
 
-                    base64_bytes = b64encode(byte_content)
-                    base64_string = base64_bytes.decode(ENCODING)
+#                     base64_bytes = b64encode(byte_content)
+#                     base64_string = base64_bytes.decode(ENCODING)
 
                 
                
-                # os.remove(image_filename)
+#                 # os.remove(image_filename)
                 
-                return jsonify({'objresponse' : [{'message': 'Image received and processed', 'image_path': base64_string, 'diseaseid' : getid}]})
-            except Exception as e:
-                return jsonify({'objresponse' : [{'message': 'Error processing image: ' + str(e)}]}), 400
+#                 return jsonify({'objresponse' : [{'message': 'Image received and processed', 'image_path': base64_string, 'diseaseid' : getid}]})
+#             except Exception as e:
+#                 return jsonify({'objresponse' : [{'message': 'Error processing image: ' + str(e)}]}), 400
 
-        return jsonify({'objresponse' : [{'message': 'Image not received', 'image_path': '', 'diseaseid' : 0}]}),
+#         return jsonify({'objresponse' : [{'message': 'Image not received', 'image_path': '', 'diseaseid' : 0}]}),
         
 class Disease(Resource):
     @classmethod
