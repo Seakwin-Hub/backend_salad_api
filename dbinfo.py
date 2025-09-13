@@ -19,17 +19,17 @@ if os.environ.get('DATABASE_URL'):
     # Fix for PostgreSQL URL format in SQLAlchemy
     if app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):
         app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace("postgres://", "postgresql://", 1)
-# else:
-#     # For local development
-#     url = quote('localhost')
-#     port = quote('3306')
-#     username = quote('root')
-#     password = quote('Seakwin$$$6050')
-#     mysqldb = quote('dbsaladdiseases')
-#     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://' + username + ':' + password + '@' + url + ':' + port + '/' + mysqldb
 else:
-    # For local development - use your external PostgreSQL connection string
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://salad_db_user:w3jzOF64iZwcxSK6DekJzR77ctRmoCBd@dpg-d328peripnbc73d0ku50-a.singapore-postgres.render.com/salad_db'
+    # For local development
+    url = quote('localhost')
+    port = quote('3306')
+    username = quote('root')
+    password = quote('Seakwin$$$6050')
+    mysqldb = quote('dbsaladdiseases')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://' + username + ':' + password + '@' + url + ':' + port + '/' + mysqldb
+# else:
+#     # For local development - use your external PostgreSQL connection string
+#     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://salad_db_user:w3jzOF64iZwcxSK6DekJzR77ctRmoCBd@dpg-d328peripnbc73d0ku50-a.singapore-postgres.render.com/salad_db'
 
 
 # log = logging.getLogger('werkzeug')
