@@ -6,3 +6,5 @@ __pycache__
 instance/
 Dockerfile
 .dockerignore
+.git
+.github
