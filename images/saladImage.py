@@ -1,6 +1,6 @@
 import os
 
-imageUrl = os.getenv('imageUrl')
+imageUrl = os.getenv('IMG_URL')
 
 listofSaladIceberg = {
     'name' : 'iceberg',

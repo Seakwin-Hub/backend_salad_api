@@ -3,13 +3,15 @@ services:
     name: flask-salad-app
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
     startCommand: gunicorn app:app
     envVars:
       - key: PYTHON_VERSION
-        value: 3.9.12
+        value: 3.11.8
       - key: SECRET_KEY
         generateValue: true
+      - key: DATABASE_URL
+        value: postgresql://salad_db_user:w3jzOF64iZwcxSK6DekJzR77ctRmoCBd@dpg-d328peripnbc73d0ku50-a.singapore-postgres.render.com/salad_db
 
 databases:
   - name: mysaladdb

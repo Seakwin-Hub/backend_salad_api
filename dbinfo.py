@@ -19,22 +19,25 @@ if os.environ.get('DATABASE_URL'):
     # Fix for PostgreSQL URL format in SQLAlchemy
     if app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):
         app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace("postgres://", "postgresql://", 1)
+# else:
+#     # For local development
+#     url = quote('localhost')
+#     port = quote('3306')
+#     username = quote('root')
+#     password = quote('Seakwin$$$6050')
+#     mysqldb = quote('dbsaladdiseases')
+#     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://' + username + ':' + password + '@' + url + ':' + port + '/' + mysqldb
 else:
-    # For local development
-    url = quote('localhost')
-    port = quote('3306')
-    username = quote('root')
-    password = quote('Seakwin$$$6050')
-    mysqldb = quote('dbsaladdiseases')
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://' + username + ':' + password + '@' + url + ':' + port + '/' + mysqldb
+    # For local development - use your external PostgreSQL connection string
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://salad_db_user:w3jzOF64iZwcxSK6DekJzR77ctRmoCBd@dpg-d328peripnbc73d0ku50-a.singapore-postgres.render.com/salad_db'
 
 
 # log = logging.getLogger('werkzeug')
 # log.disabled = True
     
 app.config["SESSION_PERMANENT"] = False
-app.config['SECRET_KEY'] = 'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJodHRwczovL2p3dC1pZHAuZXhhbXBsZS5jb20iLCJzdWIiOiJtYWlsdG86bWlrZUBleGFtcGxlLmNvbSIsIm5iZiI6MTY1NzI3NTA4MiwiZXhwIjoxNjU3Mjc4NjgyLCJpYXQiOjE2NTcyNzUwODIsImp0aSI6ImlkMTIzNDU2IiwidHlwIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9yZWdpc3RlciJ9.'
 
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJodHRwczovL2p3dC1pZHAuZXhhbXBsZS5jb20iLCJzdWIiOiJtYWlsdG86bWlrZUBleGFtcGxlLmNvbSIsIm5iZiI6MTY1NzI3NTA4MiwiZXhwIjoxNjU3Mjc4NjgyLCJpYXQiOjE2NTcyNzUwODIsImp0aSI6ImlkMTIzNDU2IiwidHlwIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9yZWdpc3RlciJ9.')
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://' + username + ':' + password + '@' + url + ':' + port + '/' + mysqldb
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['CORS_HEADERS'] = 'Content-Type'

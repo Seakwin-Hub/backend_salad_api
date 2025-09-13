@@ -1,7 +1,7 @@
 
 import os
 
-imageUrl = os.getenv('imageUrl')
+imageUrl = os.getenv('IMG_URL')
 listOfBaterial = {
     'name' : 'bacterial',
     'images': [
