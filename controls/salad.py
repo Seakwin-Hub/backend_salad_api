@@ -139,19 +139,17 @@ cloudinary.config(
 class ImageUpload(Resource):
     @classmethod
     def post(cls):
-        try:
+        # try:
             if 'file' not in request.files:
-                return jsonify({'objresponse':[{'message':'File not received','image_url':'','diseaseid':0}]}), 400
+                return {'objresponse':[{'message':'File not received','image_url':'','diseaseid':0}]}, 400
             file = request.files['file']
             if file.filename == '':
-                return jsonify({'objresponse':[{'message':'No selected file','image_url':'','diseaseid':0}]}), 400
-
+                return {'objresponse':[{'message':'No selected file','image_url':'','diseaseid':0}]}, 400
             # Save temporarily to process with OpenCV/PIL
             temp_path = f"./temp_{file.filename}"
             file.save(temp_path)    
             # OpenCV image for detection
             image = cv2.imread(temp_path)
-            
             # ----------------------
             # Your TFLite detection code
             # ----------------------
@@ -164,12 +162,13 @@ class ImageUpload(Resource):
             txt_only = False    
             
             detections = tflite_detect_images(PATH_TO_MODEL, PATH_TO_IMAGES, PATH_TO_LABELS, min_conf_threshold, images_to_test, txt_only)
+           
 
             if not detections:
                 os.remove(temp_path)
-                return jsonify({'objresponse':[{'message':'imageNotFound','image_url':'','diseaseid':0}]}), 200
+                return {'objresponse':[{'message':'imageNotFound','image_url':'','diseaseid':0}]}, 200
 
-
+           
             for detection in detections:
                 class_info, confidence, xmin, ymin, xmax, ymax = detection[0], detection[1], detection[2], detection[3], detection[4], detection[5]
                     
@@ -200,16 +199,16 @@ class ImageUpload(Resource):
             os.remove(temp_path)
             os.remove(annotated_path)
 
-            return jsonify({'objresponse':[{'message':'Image received and processed','image_url':cloud_url,'diseaseid':getid}]})
+            return {'objresponse':[{'message':'Image received and processed','image_url':cloud_url,'diseaseid':getid}]}
         
-        except Exception as e:
-            # Clean up temp files if they exist in case of error
-            if 'temp_path' in locals() and os.path.exists(temp_path):
-                os.remove(temp_path)
-            if 'annotated_path' in locals() and os.path.exists(annotated_path):
-                os.remove(annotated_path)
+        # except Exception as e:
+        #     # Clean up temp files if they exist in case of error
+        #     if 'temp_path' in locals() and os.path.exists(temp_path):
+        #         os.remove(temp_path)
+        #     if 'annotated_path' in locals() and os.path.exists(annotated_path):
+        #         os.remove(annotated_path)
                 
-            return jsonify({'objresponse':[{'message':'Error processing image: '+str(e)}]}), 400
+        #     return {'objresponse':[{'message':'Error processing image: '+str(e)}]}, 400
 
 # addFileDir = r"F:\File\Mobile\salad_detect_project\backend_salad_api"
 
@@ -342,17 +341,17 @@ class SaladList(Resource):
         
         
         
-# def updateDict(listimg=None, typeimglist=None):
-#     ENCODING = 'utf-8'
-#     for eachDisease in listimg['images'] :
-#             with open(eachDisease, 'rb') as open_file:
-#                 byte_content = open_file.read()
-#             base64_bytes = b64encode(byte_content)
+def updateDict(listimg=None, typeimglist=None):
+    ENCODING = 'utf-8'
+    for eachDisease in listimg['images'] :
+            with open(eachDisease, 'rb') as open_file:
+                byte_content = open_file.read()
+            base64_bytes = b64encode(byte_content)
 
-#             base64_string = base64_bytes.decode(ENCODING)
-#             typeimglist.append(base64_string)
+            base64_string = base64_bytes.decode(ENCODING)
+            typeimglist.append(base64_string)
         
-#     return typeimglist
+    return typeimglist
 
 # class DiseaseImg(Resource):
     
