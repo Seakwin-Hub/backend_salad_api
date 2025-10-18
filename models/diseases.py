@@ -17,6 +17,7 @@ class tbdiseases(db.Model):
         self.treatment = treatment
         self.dmeaning = dmeaning
         self.typedisease = typedisease
+        
       
     
         

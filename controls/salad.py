@@ -34,6 +34,8 @@ class HomePage(Resource):
 
 
 warnings.filterwarnings('ignore') 
+diseasImage = [listOfBaterial,fungalDowny,fungalPowdery,fungalSeptoria,fungalWilt,listOfViral]
+saladImage = [listofSaladRomaine, listOfSaladLeaf, listofSaladIceberg, listOfSaladArgula, listOfSaladEndive]
 
 def tflite_detect_images(modelpath, imgpath, lblpath, min_conf=0.5, num_test_images=10, savepath='/save', txt_only=False):
 
@@ -285,6 +287,8 @@ class Disease(Resource):
             data = tbdiseases.find_by_did(did)
             schema = diseaseschema(many=False)
             _data = schema.dump(data)
+            getDid = int(_data['did'])
+            _data['images'] = diseasImage[getDid-1]
             return {"disease": [_data]}
         except Exception as err:
             return {"msg": err}
@@ -293,11 +297,17 @@ class Disease(Resource):
 class DiseaseList(Resource):
     @classmethod
     def get(cls):
+        
+        index =0
         try:
             data = tbdiseases.query.all()
             schema = diseaseschema(many=True)
             _data = schema.dump(data)
-            return {"disease": _data}
+            
+            for salad in _data:
+                salad['images'] = diseasImage[index]
+                index+= 1
+            return {"disease": _data}   
         except Exception as err:
             return {"msg": err}
         
@@ -308,6 +318,8 @@ class SaladType(Resource):
             data = tbsaladtype.find_by_sid(sid)
             schema = saladtypeschema(many=False)
             _data = schema.dump(data)
+            getSid = int(_data['sid'])
+            _data['images'] = saladImage[getSid-1]
             return {"saladtype": [_data]}
         except Exception as err:
             return {"msg": err}
@@ -315,10 +327,15 @@ class SaladType(Resource):
 class SaladList(Resource):
     @classmethod
     def get(cls):
+        
+        index =0
         try:
             data = tbsaladtype.query.all()
             schema = saladtypeschema(many=True)
             _data = schema.dump(data)
+            for salad in _data:
+                salad['images'] = saladImage[index]
+                index+= 1
             return {"saladtype": _data}
         except Exception as err:
             return {"msg": err}
@@ -337,54 +354,54 @@ class SaladList(Resource):
         
 #     return typeimglist
 
-class DiseaseImg(Resource):
+# class DiseaseImg(Resource):
     
-    @classmethod
-    def get(cls,typeimg=None):
-        try:
+#     @classmethod
+#     def get(cls,typeimg=None):
+#         try:
             
-            listOfSalad = [listofSaladIceberg, listofSaladRomaine, listOfSaladLeaf, listOfSaladEndive,listOfSaladArgula]
-            listOfDisease = [listOfBaterial, fungalDowny, fungalPowdery, fungalSeptoria, fungalWilt, listOfViral]
-            getType = []
-            json_list = []
-            if(typeimg == "salad") : getType = listOfSalad
-            elif(typeimg == "disease") : getType = listOfDisease
+#             listOfSalad = [listofSaladIceberg, listofSaladRomaine, listOfSaladLeaf, listOfSaladEndive,listOfSaladArgula]
+#             listOfDisease = [listOfBaterial, fungalDowny, fungalPowdery, fungalSeptoria, fungalWilt, listOfViral]
+#             getType = []
+#             json_list = []
+#             if(typeimg == "salad") : getType = listOfSalad
+#             elif(typeimg == "disease") : getType = listOfDisease
             
              
-            for eachDisease in getType:
-                json_data = {'name' : eachDisease["name"], 'images' : eachDisease['images'] }
-                json_list.append(json_data)
-            return {"data" : json_list}
+#             for eachDisease in getType:
+#                 json_data = {'name' : eachDisease["name"], 'images' : eachDisease['images'] }
+#                 json_list.append(json_data)
+#             return {"data" : json_list}
                
-        except Exception as err:
-            return {"msg": err}
-class SaladKindImg(Resource):
+#         except Exception as err:
+#             return {"msg": err}
+# class SaladKindImg(Resource):
     
-    @classmethod
-    def get(cls,typeimg=None):
-        try:
-            listOfSalad = [listofSaladIceberg, listofSaladRomaine, listOfSaladLeaf, listOfSaladEndive,listOfSaladArgula]
+#     @classmethod
+#     def get(cls,typeimg=None):
+#         try:
+#             listOfSalad = [listofSaladIceberg, listofSaladRomaine, listOfSaladLeaf, listOfSaladEndive,listOfSaladArgula]
             
-            for eachDisease in listOfSalad:
-                if(eachDisease["name"] == typeimg):
-                    json_data = {'name' : eachDisease["name"], 'images' : eachDisease['images'] }
+#             for eachDisease in listOfSalad:
+#                 if(eachDisease["name"] == typeimg):
+#                     json_data = {'name' : eachDisease["name"], 'images' : eachDisease['images'] }
                     
-            return{"saladtypeimg" : [json_data]}
+#             return{"saladtypeimg" : [json_data]}
                 
-        except Exception as err:
-            return {"msg": err}
-class DiseaseKindImg(Resource):
-    @classmethod
-    def get(cls,typeimg=None):
-        try:
-            listOfDisease = [listOfBaterial, fungalDowny, fungalPowdery, fungalSeptoria, fungalWilt, listOfViral]
+#         except Exception as err:
+#             return {"msg": err}
+# class DiseaseKindImg(Resource):
+#     @classmethod
+#     def get(cls,typeimg=None):
+#         try:
+#             listOfDisease = [listOfBaterial, fungalDowny, fungalPowdery, fungalSeptoria, fungalWilt, listOfViral]
             
-            for eachDisease in listOfDisease:
+#             for eachDisease in listOfDisease:
                 
-                if(eachDisease["name"] == typeimg):
-                    json_data = {'name' : eachDisease["name"], 'images' : eachDisease['images'] }
+#                 if(eachDisease["name"] == typeimg):
+#                     json_data = {'name' : eachDisease["name"], 'images' : eachDisease['images'] }
                     
-            return{"diseasetypeimg" : [json_data]}
+#             return{"diseasetypeimg" : [json_data]}
                 
-        except Exception as err:
-            return {"msg": err}
+#         except Exception as err:
+#             return {"msg": err}
